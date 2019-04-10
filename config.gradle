@@ -1,0 +1,61 @@
+ext {
+
+    android = [
+            compileSdkVersion: 27,
+            buildToolsVersion: "27.0.3",
+            supportSdkVersion: "25.3.1",
+            minSdkVersion    : 15,
+            targetSdkVersion : 22,
+            versionCode      : 36,
+            versionName      : rootProject.VERSION_NAME
+    ]
+
+    /**
+     * maven库公共资源
+     */
+    maven_public = [
+            "releaseUrl" : 'http://192.168.192.133:8081/nexus/content/repositories/cdel-releases/', //maven仓库地址
+            "snapShotUrl": 'http://192.168.192.133:8081/nexus/content/repositories/cdel-snapshots/',
+            "groupId"    : 'com.cdel.push',// 对应maven的GroupId的值
+            "userName"   : 'zhanggongzheng',// 登录nexus ossde的用户名
+            "passWord"   : '123456',// 登录nexus oss的密码
+            "type"       : 'aar',// type
+    ]
+
+    /**
+     * com.cdel:dlconfig:1.0.0           意思为release版本为1.0.0
+     * com.cdel:dlconfig:1.0.0-SNAPSHOT  意思为snapshot版本为1.0.0
+     *
+     * snapshot 此目录下可以为1.0.0-SNAPSHOT或1.0.0+
+     * 1.0.2-SNAPSHOT@aar 关闭依赖关联 @arr和transitive = false作用一样
+     * 1.0.2-SNAPSHOT 打开依赖关联（会同步多个版本的aar，本地缓存导致）
+     *
+     * transitive = true //依赖传递中强制刷新远程库，避免远程库更新后本地未刷新
+     * compile 'common:libsecond:1.0.2-SNAPSHOT'{*     transitive = true //依赖传递中强制刷新远程库，避免远程库更新后本地未刷新
+     *}*/
+    dependencies_version = [
+            "versionEncode"   : "com.cdel.encode:encode:1.0.8-SNAPSHOT@aar",
+            "versionJPush"    : "com.cdel.jpush:cdeljpush:1.1.2-SNAPSHOT@aar",
+            "versionPay"      : "com.cdel.pay:pay:1.1.2-SNAPSHOT",
+            "versionFramework": "com.cdel.framework:framework:1.2.5-SNAPSHOT",
+            "versionDownload" : "com.cdel.download:download:1.1.1-SNAPSHOT",
+            "versionDLUpdate" : "com.cdel:dlupdate:1.1.2-SNAPSHOT",
+    ]
+
+    // 发布aar相关配置
+    maven_lib_pushlib = [
+            "artifactId" : 'dlpush',// 对应maven的artifactId的值
+            "version"    : '1.0.2-SNAPSHOT',// 对应maven的VERSION的值 snapshot应为1.0.0-SNAPSHOT
+            "description": 'This is cdel push lib'// description
+    ]
+
+    //关联相关
+    dependencies = [
+            "push-jpush"      : "cn.jiguang.sdk:jpush:3.1.7",
+            "push-jcore"      : "cn.jiguang.sdk:jcore:1.2.6",
+            "push-xiaomi"     : "cn.jiguang.sdk.plugin:xiaomi:3.1.7",
+            "push-meizu"      : "cn.jiguang.sdk.plugin:meizu:3.1.7",
+            "push-huawei"     : "cn.jiguang.sdk.plugin:huawei:3.1.7",
+            "push-oppo"       : "cn.jiguang.sdk.plugin:oppo:3.1.7"
+    ]
+}

@@ -1,0 +1,85 @@
+apply plugin: 'com.android.application'
+
+def config = rootProject.ext// android基本配置
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+android {
+    compileSdkVersion config.android.compileSdkVersion
+    buildToolsVersion config.android.buildToolsVersion
+    defaultConfig {
+        applicationId "com.cdel.sophixdemo"
+        minSdkVersion config.android.minSdkVersion
+        targetSdkVersion config.android.targetSdkVersion
+        versionCode 1
+        versionName "1.0.1"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        // dex突破65535的限制
+        multiDexEnabled true
+        //个别机器添加热修复导致Vitamio 崩溃问题
+        ndk {
+            abiFilters "armeabi", "armeabi-v7a"
+        }
+        // AndroidManifest替换参数
+        manifestPlaceholders = [
+                HOTFIX_APPID            : "25994860",
+                HOTFIX_APPSECRET        : "f63fcee692a46eb81da4c7a10fe1cd4f",
+                HOTFIX_RSA              : "MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCiD+oeBqhp79WsNwHUjzUy6ljWM6LgATtXoSFm0KErs8DeF3BUPx9P0fSF8grXh7/OoLlAk5uLC11v51mSbKP9OhQ67doHFBhJT8Og5ixIaUT9vV05KksxM85cXV/Ze7o9rjzLtHKbg4ySe/LjiQNdp7SLAhauUXHrEMJpGJaORFVQVtqCrkMjgsvx1ZPmhI8mg6U6VOYcVD2rkLV1jyQcSvcJXtJtERtRBLK2R3IRiC2Oy/IosYJjGeOrN/KMWbMQOC36p7rMOj+xYeOiDyxHX9v+5TRUZ/NXjku57CmjIVcBfF7goBvtay1TIsp1ggDp51Wsg/fGB5KIT6ZPdhzhAgMBAAECggEAYVc1w/szxQ2tRdd0Xfv2dDKWUXKKbgnPXv8FVQATDnDVc5CYg8G2SPdO6/VJ1dNPvgiDvOnsD0QwRzqqbmyaw0rTQ+IBhybmv4INeuNFzeiM6+uFxwRETbVUSd476CGM5+dz1Nb5z7bgBEw2w7xULTjCFIyYmvOIfSx/2ShPpfsiRES9fL3LOau5GqFeHczjwr0nFVuAALB4xnS8cw5z9dZfawcJUOCQKTYzUpSlLvetEAYRDXdl66mPQVdG0VLtKuyxZfIFNyyifY7IaClPvZt1ZZXgr+rKRj+m+vbVU6r5eHnQTqC4m5AVRtCA97SXYPTFFR1QH8a7YWki0/sTUQKBgQD/xnpD+mZfxdexEMlVfBIjrVfcEBeky2hVNgCXDqd2oe/NKQC3vbcgDV9NslhlBTIdXvHvvLUHSSoBlK8lic/53VYUbLQtyEmEM7k5gV6zJBLudyfXgMd30Jyq6Y4w6J4UKOCy/vxOu8DVbMBG56XpnjvyoEVBCSuJXPDXSnUE2wKBgQCiNFyC9eF/r2j12K5vERIUzGH11w6T7yIcY66JKce2m1oqucyo7ZBX3HXxOUMM6676QmesMJF2/01vZrEe8usg0zFpyhKXLc9sk8nEYd5Ip9Gui2LmAsRXTzXNR7tVI4Bxueqrb7GKrOMteplMy0sze/nOAOnZbszSxiXjqsbT8wKBgDC52e77U+do5EdKIGDVqwr66eL1edueGHkrOX+Nfh+eh/V4mzdlv+4uPfqqQCa2j66CuOpn88C4knUMozUuhN1f6hcoAkc6ga7av62R1L2h4K1nK8LlOJq9tirlJX5xwjOq+et/ogdJw1mlRxf652OTDm6RU8ApBA8+Em+hMpvDAoGAZoZSMzTXY62r2jkriGhx1VOaV5mnTTpJhUg8edY+td1cEMV/5wbBxcdDhUV8bB5Ma0Kt5NiOGXklqNRv/+/rTsQu538iYQxDn42KauaxaZspnfnceSYmlEks6KP+dMIL3dZ1zga7YbwFnClx3GhjEBe8vck2BolSTaeRK2Y2ZqECgYAHBocOQA8zhUhTMaA/yPM1gP6V+bQu92wLf318OpXRMr6/DNKnoujhFCB3wsemBWrJCdpIZifdOaNQnw6ZIyPiK88q9yA8PYUBeF+KjX0mk8k8/vLoUUJqe2bf7WV+3M0jxjlBhWpeN8rFSbuMN1gEvX1dRKIs8yNbY9FBePejTw==",
+        ]
+    }
+
+    //签名信息(统一签名信息)
+    signingConfigs {
+        cdel {
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+        }
+    }
+
+    buildTypes {
+        debug {
+            // 签名信息配置
+            signingConfig signingConfigs.cdel
+        }
+        release {
+            //是否进行混淆
+            minifyEnabled true
+            //zipAlign优化
+            zipAlignEnabled true
+            // 移除无用的resource文件
+            shrinkResources true
+            // 签名信息配置
+            signingConfig signingConfigs.cdel
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    //忽略lint异常
+    lintOptions {
+        //lint 遇到 error 时继续 构建
+        abortOnError false
+        // build release 版本 时 开启lint 检测
+        checkReleaseBuilds false
+        // 防止在发布的时候出现因MissingTranslation导致Build Failed!
+        disable 'MissingTranslation'
+    }
+
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    // 热修复
+    compile 'com.aliyun.ams:alicloud-android-hotfix:3.2.8'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support.constraint:constraint-layout:1.1.3'
+    compile 'com.android.support:design:25.3.1'
+    testCompile 'junit:junit:4.12'
+    androidTestCompile 'com.android.support.test:runner:1.0.2'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.2'
+}
